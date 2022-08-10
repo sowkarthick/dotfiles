@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Fancy-git
 # https://www.pragmaticlinux.com/2022/06/show-the-git-branch-in-your-bash-terminal-prompt/
 

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # clone the repo into "$HOME/src/gogh"
 # https://gogh-co.github.io/Gogh/
 mkdir -p "$HOME/src"
