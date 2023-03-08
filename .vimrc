@@ -10,26 +10,30 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 Plugin 'VundleVim/Vundle.vim'
-" Plugin 'Valloric/YouCompleteMe'
 Plugin 'preservim/nerdtree'
+Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 Plugin 'voldikss/vim-floaterm'
 Plugin 'tpope/vim-commentary'
+" Plugin 'wellle/context.vim'
 if has('nvim')
-	Plugin 'neovim/nvim-lspconfig'
-	Plugin 'hrsh7th/nvim-cmp'
+    Plugin 'neovim/nvim-lspconfig'
+    Plugin 'hrsh7th/nvim-cmp'
     Plugin 'hrsh7th/cmp-buffer'
-	Plugin 'hrsh7th/cmp-nvim-lsp'
-	Plugin 'L3MON4D3/LuaSnip'
-	Plugin 'saadparwaiz1/cmp_luasnip'
+    Plugin 'hrsh7th/cmp-nvim-lsp'
+    Plugin 'L3MON4D3/LuaSnip'
+    Plugin 'saadparwaiz1/cmp_luasnip'
+    Plugin 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }}
 endif
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'vim-airline/vim-airline'
     let g:airline#extensions#tabline#enabled = 1
     let g:airline#extensions#tabline#formatter = 'unique_tail'
 
+" Color schemes
 Plugin 'gruvbox-community/gruvbox'
-   let g:gruvbox_contrast_dark = 'hard'
+    let g:gruvbox_contrast_dark = 'hard'
+Plugin 'gosukiwi/vim-atom-dark'
 
 
 " Plugin 'fatih/vim-go'
@@ -50,14 +54,17 @@ nnoremap <f3> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
 nnoremap <c-s> :w<cr>
 nnoremap <c-q> :q<cr>
 
+" Insert newline without entering insert mode
+nnoremap o o<Esc>
+nnoremap O O<Esc>
+
 " Clear highlighting on escape in normal mode
 nnoremap <esc> :noh<return><esc>
 nnoremap <esc>^[ <esc>^[
 
 " nnoremap <f12> :call system("xclip -selection clipboard", @@)<CR>
-vmap <f12> y:call system("xclip -i -selection clipboard", getreg("\""))<cr>:call system("xclip -i", getreg("\""))<cr>
+vmap <S-Y> y:call system("xclip -i -selection clipboard", getreg("\""))<cr>:call system("xclip -i", getreg("\""))<cr>
 " nmap <S-f12> :call setreg("\"",system("xclip -o -selection clipboard"))<cr>p")")")"))
-
 
 " Highlight trailing spaces
 highlight ExtraWhitespace ctermbg=red guibg=red
@@ -155,10 +162,10 @@ hi Search ctermbg=LightGreen
 hi search ctermfg=black
 
 " NERDTree "
-nnoremap <leader>n :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
+" nnoremap <leader>n :NERDTreeFocus<CR>
+" nnoremap <C-n> :NERDTree<CR>
+" nnoremap <C-t> :NERDTreeToggle<CR>
+" nnoremap <C-f> :NERDTreeFind<CR>
 
 " FZF "
 " https://pragmaticpineapple.com/improving-vim-workflow-with-fzf/ "
@@ -209,12 +216,6 @@ nnoremap <silent> <Leader>r :RG <C-R><C-W><CR>
 " " GUI {{{
 " "
 " ============================================================================
-" " Enable 256 colors palette in Gnome Terminal
- if $COLORTERM == 'gnome-terminal'
-     set t_Co=256
-     endif
-" colorscheme gruvbox
-set background=dark
 
 nnoremap ]b :bnext<cr>
 nnoremap [b :bprev<cr>
@@ -239,6 +240,123 @@ map <leader>ba :bufdo bd<cr>
 " https://stackoverflow.com/questions/3961859/how-to-copy-to-clipboard-in-vim
 " "*y -> copies to primary clipboard
 " "+y -> copies to secondary clipboard
-nnoremap Y "+y
-vnoremap Y "+y
-nnoremap yY ^"*y$
+" nnoremap Y "+y
+" vnoremap Y "+y
+" nnoremap yY ^"*y$
+
+" }}}
+" ============================================================================
+" AUTOCMD {{{
+" ============================================================================
+augroup vimrc
+    " Return to last edit position when opening files
+    au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+    " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
+    au BufNewFile,BufRead,InsertLeave * silent! match ExtraWhitespace /\s\+$/
+    au InsertEnter * silent! match ExtraWhitespace /\s\+\%#\@<!$/
+
+    au InsertLeave * redraw!
+
+augroup END
+
+" }}}
+
+" jk | Escaping!
+" inoremap jk <Esc>
+" xnoremap jk <Esc>
+" cnoremap jk <C-c>
+
+" Movement in insert mode
+inoremap <C-h> <C-o>h
+inoremap <C-l> <C-o>a
+inoremap <C-j> <C-o>j
+inoremap <C-k> <C-o>k
+inoremap <C-^> <C-o><C-^>
+
+"Switch Panes
+" nmap <silent> <c-k> :wincmd k<CR>
+" nmap <silent> <c-j> :wincmd j<CR>
+nmap <silent> <c-a> :wincmd h<CR>
+nmap <silent> <c-d> :wincmd l<CR>
+
+" Auto format on save using jformat
+" set autoread
+" autocmd BufWritePost *.cpp,*.h,*.c,*.py silent! !/home/karthick/go/src/eng-source.jacques.com.au/jformat/client/client %
+" autocmd BufWritePost *.cpp,*.h,*.c,*.py redraw!
+
+
+hi FloatermBorder guibg=orange guifg=cyan
+let g:floaterm_keymap_toggle = '<F10>'
+
+" Toggle to full screen in new buffer
+noremap tt :tab split<CR>
+nnoremap th  :tabfirst<CR>
+nnoremap tk  :tabnext<CR>
+nnoremap tj  :tabprev<CR>
+nnoremap tl  :tablast<CR>
+nnoremap tn  :tabnew<CR>
+nnoremap tc  :tabclose<CR>
+
+" }}}
+" ============================================================================
+" GUI {{{
+" ============================================================================
+" Enable 256 colors palette in Gnome Terminal
+" if $COLORTERM == 'gnome-terminal'
+"     set t_Co=256
+" endif
+
+" " syntax on
+" colorscheme gruvbox
+" set background=dark
+" hi Normal guibg=NONE ctermbg=NONE
+
+" If you have vim >=8.0 or Neovim >= 0.1.5
+if (has("termguicolors"))
+ set termguicolors
+endif
+
+
+""""" enable the theme
+syntax enable
+
+" For Neovim 0.1.3 and 0.1.4
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+colorscheme gruvbox
+" colorscheme torte
+
+hi Normal guibg=#000000
+
+" This is a cheat to get trailing whitespace working.. bcos its a duplicate
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
+" }}}
+
+" ----------------------------------------------------------------------------
+" <F8> | Color scheme selector
+" ----------------------------------------------------------------------------
+function! s:colors(...)
+  return filter(map(filter(split(globpath(&rtp, 'colors/*.vim'), "\n"),
+        \                  'v:val !~ "^/usr/"'),
+        \           'fnamemodify(v:val, ":t:r")'),
+        \       '!a:0 || stridx(v:val, a:1) >= 0')
+endfunction
+
+function! s:rotate_colors()
+  if !exists('s:colors')
+    let s:colors = s:colors()
+  endif
+  let name = remove(s:colors, 0)
+  call add(s:colors, name)
+  execute 'colorscheme' name
+  redraw
+  echo name
+endfunction
+nnoremap <silent> <F8> :call <SID>rotate_colors()<cr>
+
