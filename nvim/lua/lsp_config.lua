@@ -137,3 +137,8 @@ nvim_lsp.gopls.setup {
         },
     },
 }
+
+-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#groovyls
+require'lspconfig'.groovyls.setup{
+    cmd = { "java", "-jar", "/lib64/groovy-language-server-all.jar" },
+}
